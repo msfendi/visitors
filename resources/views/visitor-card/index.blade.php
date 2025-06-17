@@ -28,12 +28,20 @@
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-sm-flex align-items-center justify-content-between mb-4">
                         <h6 class="m-0 font-weight-bold text-primary">Visitor Card Data</h6>
-                        <form method="GET" id="form-void">
+                        {{-- <form method="GET" id="form-void">
                                 <select name="void" id="void" class="form-control" onchange="document.getElementById('form-void').submit()" style="width: 300px;">
                                     <option disabled selected hidden>Select Status</option>
                                     <option value="false" {{ app('request')->input('void') == 'false'  ? 'selected' : ''}}>Active</option>
                                     <option value="true" {{ app('request')->input('void') == 'true'  ? 'selected' : ''}}>Void</option>
                                 </select>
+                        </form> --}}
+
+                        <form method="GET" id="form-available">
+                            <select name="available" id="available" class="form-control" onchange="document.getElementById('form-available').submit()" style="width: 300px;">
+                                <option disabled selected hidden>Select Status Card</option>
+                                <option value="available" {{ app('request')->input('status') == 'available'  ? 'selected' : ''}}>Available</option>
+                                <option value="in-use" {{ app('request')->input('status') == 'in-use'  ? 'selected' : ''}}>In-Use</option>
+                            </select>
                         </form>
                     </div>
                     <div class="card-body">
@@ -43,27 +51,41 @@
                                     <div class="card bg-white border-radius-10 box-shadow-10 p-20 w-300">
                                         <div class="card-header border-bottom-1 pb-10">
                                             <center>
-                                                <img src="{{ public_path('img/chutex_logo.png') }}" style="width: 70px;">
+                                                <img src="{{ asset('img/chutex_logo.png') }}" style="width: 60px;">
                                             </center>
-                                            <h2 class="card-title font-size-18 font-weight-bold text-center">Visitor {{ $visitorC->visitor_code }}</h2>
+                                            <h2 class="card-title font-size-14 font-weight-bold text-center mt-3">Visitor {{ $visitorC->visitor_code }}</h2>
                                         </div>
-                                        <br>
                                         <div class="card-body">
                                             <div class="visitor-info mb-10">
-                                                <p class="visitor-name font-size-16 font-weight-bold">John Doe - Stark Industries</p>
-                                                <p class="visitor-email font-size-14 color-666">1234567890</p>
+                                                <p class="visitor-name font-size-16 font-weight-bold">{{ $visitorC->visitor_name ?? '-'}}</p>
+                                                <p class="visitor-email font-size-14 color-666">{{$visitorC->rfid ?? '-'}}</p>
                                             </div>
                                             <div class="visitor-stats mb-10">
-                                                <p class="stat-label font-size-14 color-666">Status : <a class="stat-value font-size-16 font-weight-bold text-success">Available</a></p>
+                                                <p class="stat-label font-size-14 color-666">Status : <a class="stat-value font-size-16 font-weight-bold {{$visitorC->status_card == 'available' ? 'text-success' : 'text-danger'}}">{{$visitorC->status_card}}</a></p>
                                             </div>
                                             <br>
                                             <div class="row">
-                                                <div class="col-sm-8"><a href="{{ route('visit-logs.create') }}" class="btn btn-primary btn-block btn-sm">Use It</a></div>
+                                                @if($visitorC->status_card == 'in-use' && $visitorC->visit_time == null)
+                                                <p>Please scan visit time</p>
+                                                @elseif($visitorC->status_card == 'in-use' && $visitorC->visit_time != null && $visitorC->leave_time == null)
+                                                <p>Please scan leave time</p>
+                                                @else
+                                                <div class="col-sm-8"><a href="{{ route('visit-logs.create', $visitorC->visitor_code) }}" class="btn btn-primary btn-block btn-sm">Use It</a></div>
+                                                @endif
                                                 <div class="col-sm-4 justify-content-between">
                                                     {{-- button circle visit hijau  --}}
+                                                    @if($visitorC->visit_time == null)
                                                     <a href="#" class="btn btn-success btn-circle btn-sm visitTime" data-toggle="modal" data-target="#visitModal"><i class="fas fa-clock"></i></a>
+                                                    @else
+                                                    <a href="javascript:void(0)" class="btn btn-secondary btn-circle btn-sm"><i class="fas fa-clock"></i></a>
+                                                    @endif
+
                                                     {{-- button circle visit merah  --}}
+                                                    @if($visitorC->leave_time == null)
                                                     <a href="#" class="btn btn-danger btn-circle btn-sm leaveTime" data-toggle="modal" data-target="#leaveModal"><i class="fas fa-clock"></i></a>
+                                                    @else
+                                                    <a href="javascript:void(0)" class="btn btn-secondary btn-circle btn-sm"><i class="fas fa-clock"></i></a>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -145,8 +167,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <label>Visit Time : </label>
-                        <input class="form-control" type="text" id="modal_visit_time" name="visit_time">
+                        <label>RFID : </label>
+                        <input class="form-control" type="text" id="modal_visit_time" name="rfid_visit">
                     </div>
                 </div>
             </div>
@@ -162,8 +184,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <label>Leave Time : </label>
-                        <input class="form-control" type="text" id="modal_leave_time" name="leave_time">
+                        <label>RFID : </label>
+                        <input class="form-control" type="text" id="modal_leave_time" name="rfid_leave">
                     </div>
                 </div>
             </div>
@@ -269,5 +291,87 @@
     $('#leaveModal').on('shown.bs.modal', function () {
         $('#modal_leave_time').focus();
     }) 
+</script>
+
+
+<script>
+// post untuk update visit time
+
+$(document).on("change", "#modal_visit_time", function(e){
+    e.preventDefault();
+    var visit_time = $(this).val();
+    var rfid = $('#modal_visit_time').val();
+    $.ajax({
+        url: '/visit-logs/visit',
+        type: "POST",
+        data: {
+            "_token": "{{ csrf_token() }}",
+            "rfid_visit": rfid
+        },
+        dataType: "json",
+        success: function (data) {
+            // tampilkan modal ketika success
+            swal.fire({
+                icon: 'success',
+                title: 'Visit Time Successed Input',
+                text: 'Visit Time Successfully Input',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            setTimeout(function() {
+                window.location.reload();
+            }, 1500);
+        },
+        error: function (data) {
+            swal.fire({
+                icon: 'error',
+                title: 'Visit Time Failed Input',
+                text: 'Visit Time Failed Input',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            window.location.reload();
+    }
+    });
+})
+
+$(document).on("change", "#modal_leave_time", function(e){
+    e.preventDefault();
+    var visit_time = $(this).val();
+    var rfid = $('#modal_leave_time').val();
+    $.ajax({
+        url: '/visit-logs/leave',
+        type: "POST",
+        data: {
+            "_token": "{{ csrf_token() }}",
+            "rfid_leave": rfid
+        },
+        dataType: "json",
+        success: function (data) {
+            // tampilkan modal ketika success
+            swal.fire({
+                icon: 'success',
+                title: 'Leave Time Successed Input',
+                text: 'Leave Time Successfully Input',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            setTimeout(function() {
+                window.location.reload();
+            }, 1500);
+        },
+        error: function (data) {
+            swal.fire({
+                icon: 'error',
+                title: 'Leave Time Failed Input',
+                text: 'Leave Time Failed Input',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            window.location.reload();
+    }
+    });
+})
+
 </script>
 </html>

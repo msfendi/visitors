@@ -39,7 +39,7 @@
                                     <br>
                                     <div>
                                         <label for="text">Visitor Code :</label>
-                                        <input class="form-control" type="text" id="visitor_code" name="visitor_code">
+                                        <input class="form-control" type="text" id="visitor_code" name="visitor_code" value="{{ $visitCardId }}" readonly>
                                     </div>
                                     <br>
                                     {{-- <div>

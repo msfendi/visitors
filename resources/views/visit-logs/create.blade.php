@@ -70,26 +70,23 @@
                                     <br>
                                     <div>
                                         <label for="text">Purpose :</label>
-                                        <textarea class="form-control" id="number_plate" name="number_plate"></textarea>
+                                        <textarea class="form-control" id="purpose" name="purpose"></textarea>
                                     </div>
                                     <br>
                                     <div id="securityInput">
                                         <label>Security Name :</label>
                                         <div class="row">
                                             <div class="col-xl-12">
-                                                    <select class="form-control security_name_id" id="security_name_id" name="security_name_id" >
-                                                        <option></option>
-                                                        @foreach ($users as $user )
-                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                        @endforeach
+                                                    <select class="form-control security_name_id" id="security_name_id" name="security_name_id">
+                                                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
                                                     </select>
                                             </div>
                                         </div>
                                     </div>
                                     <br>
                                     <div>
-                                        <label for="text">Visitor ID :</label>
-                                        <input class="form-control" type="text" id="visitor_id_number" name="visitor_id_number">
+                                        <label for="text">Visitor Card ID :</label>
+                                        <input class="form-control" type="text" id="visitor_card_id" name="visitor_card_id" value="{{$visitor_card_id->id}}" readonly>
                                     </div>
                                     <br>
                                     <div class="row">
@@ -131,6 +128,24 @@
     $('.appointer_name_id').select2({
           allowClear: true,
           placeholder: 'Choose Appointer Name',
+    });
+
+    $(document).on("change", "#appointer_name_id", function(e){
+        e.preventDefault();
+        var appointerName_id = $(this).val();
+        if (appointerName_id) {
+            $.ajax({
+                url: '/visit-logs/fetchDept/'+appointerName_id,
+                type: "GET",
+                dataType: "json",
+                success:function(data) {
+                    $('#dept').val(data.dept);
+                }
+            });
+        } else{
+            $('#dept').empty();
+            $('#dept').attr('disabled','disabled');
+        }
     });
 </script>
 </html>

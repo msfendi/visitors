@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('purpose');
             $table->string('appointer');
             $table->string('dept');
-            $table->string('security_name');
+            $table->string('security_id');
             $table->string('visitor_card_id');
             $table->string('void')->default('false');
             $table->timestamps();

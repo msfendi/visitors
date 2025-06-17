@@ -69,20 +69,22 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/visitor/update', [VisitorController::class, 'update'])->name('visitor.updateVisitor');
     Route::post('/visitor/void', [VisitorController::class, 'void'])->name('visitor.void');
     Route::post('/visitor/restore', [VisitorController::class, 'restore'])->name('visitor.restore');
-    Route::get('/visitor/fetchDept/{id_user}', [VisitorController::class, 'fetchDept'])->name('visitor.fetchDept');
-    Route::get('/visitor/generatePDF/{id}', [VisitorController::class, 'generatePDF'])->name('visitor.generatePDF');
 
     // Visit Logs
     Route::get('/visit-logs/index', [VisitLogController::class, 'index'])->name('visit-logs.index');
-    Route::get('/visit-logs/create', [VisitLogController::class, 'create'])->name('visit-logs.create');
+    Route::get('/visit-logs/indexAll', [VisitLogController::class, 'indexAll'])->name('visit-logs.indexAll');
+    Route::get('/visit-logs/create/{visitor_id}', [VisitLogController::class, 'create'])->name('visit-logs.create');
     Route::post('/visit-logs/store', [VisitLogController::class, 'store'])->name('visit-logs.store');
+    Route::get('/visit-logs/indexAll', [VisitLogController::class, 'indexAll'])->name('visit-logs.indexAll');
+    Route::get('/visit-logs/showvisitor', [VisitLogController::class, 'showvisitor'])->name('visit-logs.showvisitor');
     Route::get('/visit-logs/revision/{id}', [VisitLogController::class, 'revision'])->name('visit-logs.revisionVisitor');
     Route::get('/visit-logs/fetchVisitor/{id}', [VisitLogController::class, 'fetchvisitor'])->name('visit-logs.fetchVisitor');
     Route::post('/visit-logs/update', [VisitLogController::class, 'update'])->name('visit-logs.updateVisitor');
     Route::post('/visit-logs/void', [VisitLogController::class, 'void'])->name('visit-logs.void');
     Route::post('/visit-logs/restore', [VisitLogController::class, 'restore'])->name('visit-logs.restore');
     Route::get('/visit-logs/fetchDept/{id_user}', [VisitLogController::class, 'fetchDept'])->name('visit-logs.fetchDept');
-    Route::get('/visit-logs/generatePDF/{id}', [VisitLogController::class, 'generatePDF'])->name('visit-logs.generatePDF');
+    Route::post('/visit-logs/visit', [VisitLogController::class, 'visit_time'])->name('visit-logs.visitTime');
+    Route::post('/visit-logs/leave', [VisitLogController::class, 'leave_time'])->name('visit-logs.leaveTime');
 
     // Visitor Card
     Route::get('/visitor-card/index', [VisitorCardController::class, 'index'])->name('visitor-card.index');
@@ -93,6 +95,4 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/visitor-card/update', [VisitorCardController::class, 'update'])->name('visitor-card.updateVisitor');
     Route::post('/visitor-card/void', [VisitorCardController::class, 'void'])->name('visitor-card.void');
     Route::post('/visitor-card/restore', [VisitorCardController::class, 'restore'])->name('visitor-card.restore');
-    Route::get('/visitor-card/fetchDept/{id_user}', [VisitorCardController::class, 'fetchDept'])->name('visitor-card.fetchDept');
-    Route::get('/visitor-card/generatePDF/{id}', [VisitorCardController::class, 'generatePDF'])->name('visitor-card.generatePDF');
 });

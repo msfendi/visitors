@@ -55,7 +55,8 @@
         </a>
         <div id="collapseVisitLogs" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('visit-logs.index') }}">Daftar Visit Logs</a>
+                <a class="collapse-item" href="{{ route('visit-logs.index') }}">Daftar Visit Log Active</a>
+                <a class="collapse-item" href="{{ route('visit-logs.indexAll') }}">Daftar Visit Log All</a>
             </div>
         </div>
     </li>

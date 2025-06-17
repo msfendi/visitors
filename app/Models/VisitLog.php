@@ -17,7 +17,7 @@ class VisitLog extends Model
         'purpose',
         'appointer',
         'dept',
-        'security_name',
-        'visitor_badge_id',
+        'security_id',
+        'visitor_card_id',
     ];
 }

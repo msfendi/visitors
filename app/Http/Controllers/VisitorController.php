@@ -32,30 +32,30 @@ class VisitorController extends Controller
 
     public function store(Request $request)
     {
-        // $visitor = Visitor::create([
-        //     'name' => $request->visitor_name,
-        //     'phone' => $request->phone,
-        //     'instansi' => $request->instansi,
-        //     'identity_number' => $request->identity_number,
-        //     'number_plate' => $request->number_plate,
-        //     'void' => 'false',
-        // ]);
-
-        // Alert::success('Created Successfully!', 'Visitor successfully created!');
-        // return redirect()->intended('visitor/index');
-
-        $request->validate([
-            'image' => 'required|mimes:png,jpg,jpeg'
+        $visitor = Visitor::create([
+            'name' => $request->visitor_name,
+            'phone' => $request->phone,
+            'instansi' => $request->instansi,
+            'identity_number' => $request->identity_number,
+            'number_plate' => $request->number_plate,
+            'void' => 'false',
         ]);
 
-        $image = $request->image;
+        Alert::success('Created Successfully!', 'Visitor successfully created!');
+        return redirect()->intended('visitor/index');
 
-        $ocr = new TesseractOCR($image); //Pakai TesseractOCR
-        $text = $ocr->lang('eng')->run();
+        // $request->validate([
+        //     'image' => 'required|mimes:png,jpg,jpeg'
+        // ]);
 
-        // $ocrText = OCR::scan($image); //Pakai LaraOCR
+        // $image = $request->image;
 
-        dd($text);
+        // $ocr = new TesseractOCR($image); //Pakai TesseractOCR
+        // $text = $ocr->lang('eng')->run();
+
+        // // $ocrText = OCR::scan($image); //Pakai LaraOCR
+
+        // dd($text);
     }
 
     public function revision($id)

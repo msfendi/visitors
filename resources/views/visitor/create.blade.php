@@ -57,9 +57,9 @@
                                         <input class="form-control" type="text" id="number_plate" name="number_plate">
                                     </div>
                                     <br>
-                                    <div>
+                                    {{-- <div>
                                         <input type="file" name="image" class="form-control" required> 
-                                    </div>
+                                    </div> --}}
                                     <br>
                                     <div class="row">
                                         <div class="col-12">

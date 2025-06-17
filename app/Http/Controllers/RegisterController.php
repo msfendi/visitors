@@ -22,6 +22,7 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $this->validate($request, [
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'min:8'],
@@ -29,6 +30,7 @@ class RegisterController extends Controller
 
         $user = User::create([
             'name' => $request->name,
+            'dept' => $request->dept,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
@@ -43,6 +45,7 @@ class RegisterController extends Controller
 
     public function storeAuth(Request $request)
     {
+        // dd($request->all());
         $this->validate($request, [
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'min:8'],
