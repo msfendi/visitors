@@ -17,7 +17,7 @@
 
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Visitor Logs</h1>
+                    <h1 class="h3 mb-0 text-gray-800">Visitor Logs Active</h1>
                     {{-- <div>
                         <a href="{{ route('visit-logs.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                             class="fas fa-plus fa-sm text-white-50"></i> Create Visitor Logs</a>
@@ -89,6 +89,11 @@
                                         <td>{{ $visitLog->dept }}</td>
                                         <td>{{ $visitLog->security_name }}</td>
                                          <td>
+                                            <center>
+                                                <a href="{{ route('visitor-card.index') }}" class="btn btn-success btn-circle btn-sm">
+                                                    <i class="fas fa-plus"></i>
+                                                </a>
+                                            </center>
                                              {{-- <center>
                                                 @if (request()->get('void') == 'false' || request()->get('void') == '')
                                                 <a id="show-void" class="btn btn-danger btn-circle btn-sm btn-void-record show-void" data-void-url="{{ route('visit-logs.fetchVisitLog', $visitLog->id) }}" data-void-link="{{ route('visit-logs.void') }}" data-void-name="data-visitor" data-toggle="modal" data-target="#voidModal">

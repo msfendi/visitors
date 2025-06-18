@@ -17,6 +17,7 @@ class UsersSeeder extends Seeder
         DB::table('users')->insert([
             'name' => 'Dimas Galang Ramadhan',
             'email' => 'dimasgalang@chutex.id',
+            'dept' => 'IT',
             'password' => Hash::make('Resistancelimit')
         ]);
     }

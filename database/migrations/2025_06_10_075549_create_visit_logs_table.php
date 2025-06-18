@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('visitor_id');
             $table->date('visit_date');
-            $table->dateTime('visit_time');
-            $table->dateTime('leave_time');
+            $table->dateTime('visit_time')->nullable();
+            $table->dateTime('leave_time')->nullable();
             $table->string('purpose');
             $table->string('appointer');
             $table->string('dept');
             $table->string('security_id');
-            $table->string('visitor_card_id');
+            $table->string('visitor_card_id')->nullable();
+            $table->string('status')->nullable();
             $table->string('void')->default('false');
             $table->timestamps();
         });
