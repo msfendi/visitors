@@ -36,13 +36,25 @@
                                 </select>
                         </form> --}}
 
-                        <form method="GET" id="form-available">
-                            <select name="available" id="available" class="form-control" onchange="document.getElementById('form-available').submit()" style="width: 300px;">
-                                <option disabled selected hidden>Select Status Card</option>
-                                <option value="available" {{ app('request')->input('status') == 'available'  ? 'selected' : ''}}>Available</option>
-                                <option value="in-use" {{ app('request')->input('status') == 'in-use'  ? 'selected' : ''}}>In-Use</option>
-                            </select>
-                        </form>
+                        <div class="d-flex justify-content-end" style="gap: 10px">
+                            <form method="GET" id="form-available">
+                                <select name="available" id="available" class="form-control" onchange="document.getElementById('form-available').submit()" style="width: 300px;">
+                                    <option disabled selected hidden>Select Status Card</option>
+                                    <option value="available" {{ app('request')->input('status') == 'available'  ? 'selected' : ''}}>Available</option>
+                                    <option value="in-use" {{ app('request')->input('status') == 'in-use'  ? 'selected' : ''}}>In-Use</option>
+                                </select>
+                            </form>
+    
+                            {{-- input search and form request--}}
+                            <form id="form-search">
+                                <div class="input-group" style="width: 300px;">
+                                    <input type="text" class="form-control" id="search" name="search" placeholder="Search Visitor Name">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" id="btn-search"><i class="fas fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -74,14 +86,14 @@
                                                 @endif
                                                 <div class="col-sm-4 justify-content-between">
                                                     {{-- button circle visit hijau  --}}
-                                                    @if($visitorC->visit_time == null)
+                                                    @if($visitorC->visit_time == null && $visitorC->status_card == 'in-use')
                                                     <a href="#" class="btn btn-success btn-circle btn-sm visitTime" data-toggle="modal" data-target="#visitModal"><i class="fas fa-clock"></i></a>
                                                     @else
                                                     <a href="javascript:void(0)" class="btn btn-secondary btn-circle btn-sm"><i class="fas fa-clock"></i></a>
                                                     @endif
 
                                                     {{-- button circle visit merah  --}}
-                                                    @if($visitorC->leave_time == null)
+                                                    @if($visitorC->leave_time == null && $visitorC->status_card == 'in-use' && $visitorC->visit_time != null)
                                                     <a href="#" class="btn btn-danger btn-circle btn-sm leaveTime" data-toggle="modal" data-target="#leaveModal"><i class="fas fa-clock"></i></a>
                                                     @else
                                                     <a href="javascript:void(0)" class="btn btn-secondary btn-circle btn-sm"><i class="fas fa-clock"></i></a>
@@ -107,55 +119,6 @@
 
         </div>
         <!-- End of Main Content -->
-
-        <!-- Modal -->
-        {{-- <div class="modal fade" id="voidModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-md" role="document" >
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 id="void-title" class="modal-title" id="exampleModalLabel">Void Record</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form action="{{ route('visitor.void') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                    <div class="modal-body">
-                        <p id="modal-text-record-void"></p>
-                        <input class="form-control" type="hidden" id="modal_visitor_id_void" name="visitor_id" readonly>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Tutup</button>
-                        <a id="btn-confirm-void"><button class="btn btn-danger" type="submit">Confirm</button></a>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="restoreModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-md" role="document" >
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 id="restore-title" class="modal-title" id="exampleModalLabel">Restore Record</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form action="{{ route('visitor.restore') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                    <div class="modal-body">
-                        <p id="modal-text-record-restore"></p>
-                        <input class="form-control" type="hidden" id="modal_visitor_id_restore" name="visitor_id" readonly>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Tutup</button>
-                        <a id="btn-confirm-restore"><button class="btn btn-success" type="submit">Confirm</button></a>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div> --}}
 
         <div class="modal fade" id="visitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-md" role="document" >
@@ -191,38 +154,14 @@
             </div>
         </div>
 
-        {{-- <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-md" role="document" >
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 id="modal-title" class="modal-title" id="exampleModalLabel">Import Approval</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form action="" method="POST" enctype="multipart/form-data">
-                        @csrf
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label>PILIH FILE</label>
-                                    <input type="file" name="file" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                                <button type="submit" class="btn btn-success">Import</button>
-                            </div>
-                    </form>
-                </div>
-            </div>
-        </div> --}}
-
 
 @include('layout.footer')
 </body>
 <!-- Page level plugins -->
 <script src="{{asset('vendor/datatables/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> --}}
+
 
 <!-- Page level custom scripts -->
 <script src="{{asset('js/demo/datatables-demo.js')}}"></script>
@@ -237,25 +176,6 @@
     $('.btn-restore-record').on('click', function () {
             $("#modal-text-record-restore").text('Apakah anda yakin ingin mengembalikan Visitor ' + $(this).data('restore-name') + '?');
     });
-    // $('.btn-revision-record').on('click', function () {
-    //         $("#modal-text-record-revision").text('Apakah anda yakin ingin mengubah status Approval menjadi Revision ' + $(this).data('revision-name') + '?');
-    // });
-    
-    // $(function () {
-    //     $('body').on('click', '#show-revision', function() {
-    //     var jsonRevision = $(this).data('revision-url'); 
-    //     $.get(jsonRevision, function (data) {
-    //         if (data.length > 0) {
-    //             $('#modal_preparer_id').val(data[0].preparer_id);
-    //             $('#modal_name').val(data[0].name);
-    //             $('#modal_document_name').val(data[0].document_name);
-    //             $('#modal_token').val(data[0].token);
-    //             } else {
-
-    //             }
-    //         });
-    //     });
-    // });
 
     $(function () {
         $('body').on('click', '#show-void', function() {
@@ -372,6 +292,26 @@ $(document).on("change", "#modal_leave_time", function(e){
     }
     });
 })
+</script>
 
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#search').on('keyup', debounce(1000,function() {
+            var searchValue = $(this).val().toLowerCase();
+            $.ajax({
+                url: '/visit-logs/search',
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "search": searchValue
+                },
+                dataType: "json",
+                success: function (data) {
+                    console.log('success');
+                    
+                }
+            })
+        }))
+    });
 </script>
 </html>

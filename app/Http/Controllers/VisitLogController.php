@@ -34,7 +34,7 @@ class VisitLogController extends Controller
                 ->where('visit_logs.void', 'false')->orderBy('visit_logs.created_at', 'desc')
                 ->get();
         }
-        return view('visit-logs.index', compact('visitLogs'));
+        return view('visit-logs.indexActive', compact('visitLogs'));
     }
 
     public function indexAll(Request $request)
@@ -163,11 +163,16 @@ class VisitLogController extends Controller
                 })->make(true);
         };
     }
-}
 
-// $visitLogs = DB::table('visit_logs')->join('visitors', 'visit_logs.visitor_id', '=', 'visitors.id')
-//     ->join('users as appointer', 'visit_logs.appointer', '=', 'appointer.id')
-//     ->join('users as security', 'visit_logs.security_id', '=', 'security.id')
-//     ->select('visit_logs.*', 'visitors.name as visitor_name', 'appointer.name as appointer_name', 'security.name as security_name')
-//     ->where('visit_logs.void', $request->void)->orderBy('visit_logs.created_at', 'desc')
-//     ->get();
+    public function search(Request $request)
+    {
+        if ($request->ajax()) {
+            $visitor = DB::table('visitor_cards')->join('visit_logs', 'visitor_cards.id', '=', 'visit_logs.visitor_card_id')->join('visitors', 'visit_logs.visitor_id', '=', 'visitors.id')
+                ->where('visitor_code', 'like', '%' . $request->search . '%')
+                ->orWhere('visitors.name', 'like', '%' . $request->search . '%')
+                ->get();
+
+            return response($visitor);
+        }
+    }
+}

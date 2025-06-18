@@ -17,7 +17,7 @@
 
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Visitor Logs All</h1>
+                    <h1 class="h3 mb-0 text-gray-800">Visitor Logs</h1>
                     {{-- <div>
                         <a href="{{ route('visit-logs.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                             class="fas fa-plus fa-sm text-white-50"></i> Create Visitor Logs</a>
@@ -73,6 +73,7 @@
                                         <th>Appointer</th>
                                         <th>Dept</th>
                                         <th>Security Name</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -87,7 +88,7 @@
                                         <td>{{ $visitLog->appointer_name }}</td>
                                         <td>{{ $visitLog->dept }}</td>
                                         <td>{{ $visitLog->security_name }}</td>
-                                         {{-- <td> --}}
+                                         <td>
                                              {{-- <center>
                                                 @if (request()->get('void') == 'false' || request()->get('void') == '')
                                                 <a id="show-void" class="btn btn-danger btn-circle btn-sm btn-void-record show-void" data-void-url="{{ route('visit-logs.fetchVisitLog', $visitLog->id) }}" data-void-link="{{ route('visit-logs.void') }}" data-void-name="data-visitor" data-toggle="modal" data-target="#voidModal">
@@ -99,7 +100,7 @@
                                                 </a>
                                                 @endif
                                             </center> --}}
-                                        {{-- </td> --}}
+                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -271,48 +272,6 @@
 
                 }
             });
-        });
-    });
-</script>
-
-<script type="text/javascript">
-    var jsonVisitor = '{{ route("visit-logs.showvisitor") }}';
-    $(document).ready(function() {
-        // var date = new Date();
-        // var firstDay = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
-        // var lastDay = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + (date.getDate() + 1)).slice(-2);
-        // document.getElementById("fromdate").value = firstDay;
-        // document.getElementById("todate").value = lastDay;
-    
-        var tableVisitor = $('#dataTable').DataTable({
-            destroy: true,
-            // processing: true,
-            serverSide: true,
-            responsive: true,
-            // dom: 'rtip',
-            ajax: {
-                url: jsonVisitor,
-                data: function(d) {
-                    d.fromdate = document.getElementById('fromdate').value;
-                    d.todate = document.getElementById('todate').value;
-                }
-            },
-            columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'visitor_name', name: 'visitor_name', orderable: false },
-                { data: 'visit_date', name: 'visit_date', orderable: false },
-                { data: 'visit_time', name: 'visit_time', orderable: false },
-                { data: 'leave_time', name: 'leave_time', orderable: false },
-                { data: 'purpose', name: 'purpose', orderable: false },
-                { data: 'appointer_name', name: 'appointer_name', orderable: false },
-                { data: 'dept', name: 'dept', orderable: false },
-                { data: 'security_name', name: 'security_name', orderable: false },
-            ]
-        });
-
-        $('#filter-data').click(function() {
-            tableVisitor.draw();
-            // console.log("Clicked");
         });
     });
 </script>

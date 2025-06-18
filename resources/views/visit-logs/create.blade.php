@@ -115,6 +115,8 @@
 <script type="module" src="{{asset('vendor/module/pdf.min.mjs')}}"></script>
 <script type="module" src="{{asset('vendor/module/pdf.worker.min.mjs')}}"></script>
 <script src="{{asset('vendor/jquery/interact.min.js')}}"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
 
 <script type="text/javascript">
     $('.security_name_id').select2({
@@ -146,6 +148,16 @@
             $('#dept').empty();
             $('#dept').attr('disabled','disabled');
         }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#purpose').summernote({
+            placeholder: 'Hello Bootstrap 4',
+            tabsize: 2,
+            height: 100
+        });
     });
 </script>
 </html>

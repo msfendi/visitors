@@ -85,6 +85,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/visit-logs/fetchDept/{id_user}', [VisitLogController::class, 'fetchDept'])->name('visit-logs.fetchDept');
     Route::post('/visit-logs/visit', [VisitLogController::class, 'visit_time'])->name('visit-logs.visitTime');
     Route::post('/visit-logs/leave', [VisitLogController::class, 'leave_time'])->name('visit-logs.leaveTime');
+    Route::post('visit-logs/search', [VisitLogController::class, 'search'])->name('visit-logs.search');
 
     // Visitor Card
     Route::get('/visitor-card/index', [VisitorCardController::class, 'index'])->name('visitor-card.index');
