@@ -11,8 +11,11 @@ class VisitorCard extends Model
 
     protected $fillable = [
         'rfid',
-        'visitor_code',
+        'visitor_code', // V0000001
+        'visitor_number', //iteration number
         'status_card',
+        'qr_name',
+        'qr_path',
         'void'
     ];
 }

@@ -32,24 +32,19 @@
                             <div class="card-body">
                                     @csrf
                                     <input class="form-control" type="hidden" id="visitor_card_id" name="visitor_card_id">
-                                    <div>
+                                    {{-- <div>
                                         <label for="text">RFID :</label>
                                         <input class="form-control" type="text" id="rfid" name="rfid">
+                                    </div> --}}
+                                    <div>
+                                        <label for="text">Visitor Code :</label>
+                                        <input class="form-control" type="text" id="visitor_code" name="visitor_code" value="{{ $newVisitorCode }}" readonly>
                                     </div>
                                     <br>
                                     <div>
-                                        <label for="text">Visitor Code :</label>
-                                        <input class="form-control" type="text" id="visitor_code" name="visitor_code" value="{{ $visitCardId }}" readonly>
+                                        <label for="text">Visitor Number :</label>
+                                        <input class="form-control" type="text" id="visitor_number" name="visitor_number" value="{{ $visitCardId }}" readonly>
                                     </div>
-                                    <br>
-                                    {{-- <div>
-                                        <label for="text">Status Card :</label>
-                                        <select class="form-control status_card" id="status_card" name="status_card" >
-                                            <option></option>
-                                            <option value="available">Available</option>
-                                            <option value="in-use">In-Use</option>
-                                        </select>
-                                    </div> --}}
                                     <br>
                                     <div class="row">
                                         <div class="col-12">

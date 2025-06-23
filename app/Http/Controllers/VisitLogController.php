@@ -7,8 +7,10 @@ use App\Models\VisitLog;
 use App\Models\Visitor;
 use App\Models\VisitorCard;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -18,7 +20,7 @@ class VisitLogController extends Controller
     {
         if ($request->void) {
 
-            $visitLogs = DB::table('visit_logs')->join('visitor_cards', 'visit_logs.visitor_card_id', '=', 'visitor_cards.id')
+            $visitLogs = DB::table('visit_logs')->join('visitor_cards', 'visit_logs.visitor_card_id', '=', 'visitor_cards.visitor_number')
                 ->join('visitors', 'visit_logs.visitor_id', '=', 'visitors.id')
                 ->join('users as appointer', 'visit_logs.appointer', '=', 'appointer.id')
                 ->join('users as security', 'visit_logs.security_id', '=', 'security.id')
@@ -26,7 +28,7 @@ class VisitLogController extends Controller
                 ->where('visit_logs.void', $request->void)->orderBy('visit_logs.created_at', 'desc')
                 ->get();
         } else {
-            $visitLogs = DB::table('visit_logs')->join('visitor_cards', 'visit_logs.visitor_card_id', '=', 'visitor_cards.id')
+            $visitLogs = DB::table('visit_logs')->join('visitor_cards', 'visit_logs.visitor_card_id', '=', 'visitor_cards.visitor_number')
                 ->join('visitors', 'visit_logs.visitor_id', '=', 'visitors.id')
                 ->join('users as appointer', 'visit_logs.appointer', '=', 'appointer.id')
                 ->join('users as security', 'visit_logs.security_id', '=', 'security.id')
@@ -58,12 +60,12 @@ class VisitLogController extends Controller
         return view('visit-logs.index', compact('visitLogs'));
     }
 
-    public function create($visitor_id)
+    public function create($visitor_number)
     {
         $visitors = Visitor::all();
         $users = User::all();
         $securities = User::where('dept', 'security')->get();
-        $visitor_card_id = VisitorCard::findOrFail($visitor_id);
+        $visitor_card_id = VisitorCard::where('visitor_number', $visitor_number)->first();
 
         return view('visit-logs.create', compact('visitors', 'users', 'securities', 'visitor_card_id'));
     }
@@ -83,7 +85,7 @@ class VisitLogController extends Controller
             'void' => 'false',
         ]);
 
-        $visitCard = VisitorCard::find($request->visitor_card_id);
+        $visitCard = VisitorCard::where('visitor_number', $request->visitor_card_id)->first();
         $visitCard->update([
             'status_card' => 'in-use',
         ]);
@@ -101,43 +103,109 @@ class VisitLogController extends Controller
     public function visit_time(Request $request)
     {
         // checking rfid number
-        $visitorCard = VisitorCard::where('rfid', $request->rfid_visit)->first();
-        if (!$visitorCard) {
-            Alert::error('Error!', 'RFID not found!');
-            return redirect()->back();
-        } else {
-            $visitLog = VisitLog::where('visitor_card_id', $visitorCard->id)->where('void', 'false')->first();
-            $visitLog->update([
-                'visit_time' => now()
-            ]);
-        }
+        // $visitorCard = VisitorCard::where('rfid', $request->rfid_visit)->first();
+        // if (!$visitorCard) {
+        //     Alert::error('Error!', 'RFID not found!');
+        //     return redirect()->back();
+        // } else {
+        //     $visitLog = VisitLog::where('visitor_card_id', $visitorCard->id)->where('void', 'false')->first();
+        //     $visitLog->update([
+        //         'visit_time' => now()
+        //     ]);
+        // }
 
-        return response()->json($visitorCard);
+        try {
+            // checking qrcode code
+            $exploding = explode('_', $request->visitor_code);
+            $visitor_code = $exploding[0];
+            $visitor_number = $exploding[1];
+
+            $visitorCard = VisitorCard::where('visitor_code', '=', $visitor_code)->get();
+
+            if (count($visitorCard) > 0) {
+                $visitLog = VisitLog::where('visitor_card_id', '=', $visitorCard[0]->visitor_number)->first();
+                if ($visitLog) {
+                    $visitLog->update([
+                        'visit_time' => now()
+                    ]);
+                    return response()->json(['success' => true, 'message' => 'Visit time updated']);
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Visitor code not found'], 404);
+                }
+            } else {
+                // Alert::error('Error!', 'Visitor Code Id' . $visitor_code . 'not exist');
+                // return redirect()->back();
+                return response()->json(['success' => false, 'message' => 'Visitor code not found'], 404);
+            }
+
+            return response()->json($visitorCard);
+        } catch (Exception $e) {
+            // Alert::error('Error!', "Invalid input, please check the qr data!")->autoClose(1000);
+            return response()->json(['success' => false, 'message' => 'Invalid input, please check the qr data!'], 400);
+        }
     }
 
     public function leave_time(Request $request)
     {
         // checking rfid number
-        $visitorCard = VisitorCard::where('rfid', $request->rfid_leave)->first();
-        if (!$visitorCard) {
-            Alert::error('Error!', 'RFID not found!');
-            return redirect()->back();
-        } else {
-            $visitLog = VisitLog::where('visitor_card_id', $visitorCard->id)->where('void', 'false')->first();
-            $visitLog->update([
-                'leave_time' => now()
-            ]);
+        // $visitorCard = VisitorCard::where('rfid', $request->rfid_leave)->first();
+        // if (!$visitorCard) {
+        //     Alert::error('Error!', 'RFID not found!');
+        //     return redirect()->back();
+        // } else {
+        //     $visitLog = VisitLog::where('visitor_card_id', $visitorCard->id)->where('void', 'false')->first();
+        //     $visitLog->update([
+        //         'leave_time' => now()
+        //     ]);
 
-            $visitorCard->update([
-                'status_card' => 'available',
-            ]);
+        //     $visitorCard->update([
+        //         'status_card' => 'available',
+        //     ]);
 
-            $visitLog->update([
-                'visitor_card_id' => '',
-            ]);
+        //     $visitLog->update([
+        //         'visitor_card_id' => '',
+        //     ]);
+        // }
+
+        // return response()->json($visitorCard);
+
+        try {
+            // checking qrcode code
+            $exploding = explode('_', $request->visitor_code);
+            $visitor_code = $exploding[0];
+            $visitor_number = $exploding[1];
+
+            $visitorCard = VisitorCard::where('visitor_code', '=', $visitor_code)->get();
+
+            if (count($visitorCard) > 0) {
+                $visitLog = VisitLog::where('visitor_card_id', '=', $visitorCard[0]->visitor_number)->first();
+                if ($visitLog) {
+                    $visitLog->update([
+                        'leave_time' => now()
+                    ]);
+
+                    $visitorCard[0]->update([
+                        'status_card' => 'available',
+                    ]);
+
+                    $visitLog->update([
+                        'visitor_card_id' => '',
+                    ]);
+                    return response()->json(['success' => true, 'message' => 'Leave time updated']);
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Visitor code not found'], 404);
+                }
+            } else {
+                // Alert::error('Error!', 'Visitor Code Id' . $visitor_code . 'not exist');
+                // return redirect()->back();
+                return response()->json(['success' => false, 'message' => 'Visitor code not found'], 404);
+            }
+
+            return response()->json($visitorCard);
+        } catch (Exception $e) {
+            // Alert::error('Error!', "Invalid input, please check the qr data!")->autoClose(1000);
+            return response()->json(['success' => false, 'message' => 'Invalid input, please check the qr data!'], 400);
         }
-
-        return response()->json($visitorCard);
     }
 
     public function showvisitor(Request $request)

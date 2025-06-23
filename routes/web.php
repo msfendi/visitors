@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [LoginController::class, 'login'])->name('/');
 
 Route::group(['middleware' => 'guest'], function () {
-    Route::get('/register', [RegisterController::class, 'index'])->name('register');
+    // Route::get('/register', [RegisterController::class, 'index'])->name('register');
     Route::post('/register/guest', [RegisterController::class, 'store'])->name('register.guest');
 
     Route::get('/login', [LoginController::class, 'login'])->name('login.guest');
@@ -36,7 +36,7 @@ Route::group(['middleware' => 'guest'], function () {
 });
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    // Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
     //Register
@@ -73,7 +73,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Visit Logs
     Route::get('/visit-logs/index', [VisitLogController::class, 'index'])->name('visit-logs.index');
     Route::get('/visit-logs/indexAll', [VisitLogController::class, 'indexAll'])->name('visit-logs.indexAll');
-    Route::get('/visit-logs/create/{visitor_id}', [VisitLogController::class, 'create'])->name('visit-logs.create');
+    Route::get('/visit-logs/create/{visitor_number}', [VisitLogController::class, 'create'])->name('visit-logs.create');
     Route::post('/visit-logs/store', [VisitLogController::class, 'store'])->name('visit-logs.store');
     Route::get('/visit-logs/indexAll', [VisitLogController::class, 'indexAll'])->name('visit-logs.indexAll');
     Route::get('/visit-logs/showvisitor', [VisitLogController::class, 'showvisitor'])->name('visit-logs.showvisitor');
@@ -89,11 +89,14 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Visitor Card
     Route::get('/visitor-card/index', [VisitorCardController::class, 'index'])->name('visitor-card.index');
+    Route::get('/visitor-card/indexTable', [VisitorCardController::class, 'indexTable'])->name('visitor-card.indexTable');
     Route::get('/visitor-card/create', [VisitorCardController::class, 'create'])->name('visitor-card.create');
     Route::post('/visitor-card/store', [VisitorCardController::class, 'store'])->name('visitor-card.store');
-    Route::get('/visitor-card/revision/{id}', [VisitorCardController::class, 'revision'])->name('visitor-card.revisionVisitor');
-    Route::get('/visitor-card/fetchVisitor/{id}', [VisitorCardController::class, 'fetchvisitor'])->name('visitor-card.fetchVisitor');
-    Route::post('/visitor-card/update', [VisitorCardController::class, 'update'])->name('visitor-card.updateVisitor');
+    Route::get('/visitor-card/revision/{id}', [VisitorCardController::class, 'revision'])->name('visitor-card.revisionVisitorCard');
+    Route::get('/visitor-card/fetchVisitorCard/{id}', [VisitorCardController::class, 'fetchvisitorcard'])->name('visitor-card.fetchVisitorCard');
+    Route::post('/visitor-card/update', [VisitorCardController::class, 'update'])->name('visitor-card.updateVisitorCard');
     Route::post('/visitor-card/void', [VisitorCardController::class, 'void'])->name('visitor-card.void');
     Route::post('/visitor-card/restore', [VisitorCardController::class, 'restore'])->name('visitor-card.restore');
+    Route::get('/visitor-card/generateqr/{id}', [VisitorCardController::class, 'generateqr'])->name('visitor-card.generateqr');
+    Route::get('/visitor-card/batchQR', [VisitorCardController::class, 'batchQR'])->name('visitor-card.batchQR');
 });

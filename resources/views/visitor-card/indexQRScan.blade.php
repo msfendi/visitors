@@ -135,9 +135,14 @@
                             <span aria-hidden="true">x</span>
                         </button>
                     </div>
+                    
                     <div class="modal-body">
-                        <label>RFID : </label>
-                        <input class="form-control" type="text" id="modal_visit_time" name="rfid_visit">
+                        <input type="hidden" name="date" id="date" value="{{ date('Y-m-d') }}">
+                        <div id="reader"></div>
+                        <br>
+                        @csrf
+                        <label>Visitor ID : </label>
+                        <input class="form-control" type="text" id="modal_visit_time" name="visitor_id_visit">
                     </div>
                 </div>
             </div>
@@ -152,9 +157,14 @@
                             <span aria-hidden="true">x</span>
                         </button>
                     </div>
+
                     <div class="modal-body">
-                        <label>RFID : </label>
-                        <input class="form-control" type="text" id="modal_leave_time" name="rfid_leave">
+                        <input type="hidden" name="date" id="date" value="{{ date('Y-m-d') }}">
+                        <div id="readerLeave"></div>
+                        <br>
+                        @csrf
+                        <label>Visitor ID : </label>
+                        <input class="form-control" type="text" id="modal_leave_time" name="visitor_id_leave">
                     </div>
                 </div>
             </div>
@@ -212,10 +222,12 @@
 <script type="text/javascript">
     $('#visitModal').on('shown.bs.modal', function () {
         $('#modal_visit_time').focus();
+        html5QRCodeScanner.render(onScanSuccess);
     }) 
 
     $('#leaveModal').on('shown.bs.modal', function () {
         $('#modal_leave_time').focus();
+        html5QRCodeScannerLeave.render(onScanSuccessLeave);
     }) 
 </script>
 
@@ -226,17 +238,19 @@
 $(document).on("change", "#modal_visit_time", function(e){
     e.preventDefault();
     var visit_time = $(this).val();
-    var rfid = $('#modal_visit_time').val();
+    var visitor_code = $('#modal_visit_time').val();
+    
     $.ajax({
         url: '/visit-logs/visit',
         type: "POST",
         data: {
             "_token": "{{ csrf_token() }}",
-            "rfid_visit": rfid
+            "visitor_code": visitor_code
         },
         dataType: "json",
         success: function (data) {
             // tampilkan modal ketika success
+            $('#modal_visit_time').val('')
             swal.fire({
                 icon: 'success',
                 title: 'Visit Time Successed Input',
@@ -249,6 +263,8 @@ $(document).on("change", "#modal_visit_time", function(e){
             }, 1500);
         },
         error: function (data) {
+            $('#modal_visit_time').val('')
+            
             swal.fire({
                 icon: 'error',
                 title: 'Visit Time Failed Input',
@@ -256,7 +272,9 @@ $(document).on("change", "#modal_visit_time", function(e){
                 showConfirmButton: false,
                 timer: 1500
             })
-            window.location.reload();
+            setTimeout(function() {
+                window.location.reload();
+            }, 1500);
     }
     });
 })
@@ -264,17 +282,18 @@ $(document).on("change", "#modal_visit_time", function(e){
 $(document).on("change", "#modal_leave_time", function(e){
     e.preventDefault();
     var visit_time = $(this).val();
-    var rfid = $('#modal_leave_time').val();
+    var visitor_code = $('#modal_leave_time').val();
     $.ajax({
         url: '/visit-logs/leave',
         type: "POST",
         data: {
             "_token": "{{ csrf_token() }}",
-            "rfid_leave": rfid
+            "visitor_code": visitor_code
         },
         dataType: "json",
         success: function (data) {
             // tampilkan modal ketika success
+            $('#modal_leave_time').val('')
             swal.fire({
                 icon: 'success',
                 title: 'Leave Time Successed Input',
@@ -287,6 +306,7 @@ $(document).on("change", "#modal_leave_time", function(e){
             }, 1500);
         },
         error: function (data) {
+            $('#modal_leave_time').val('')
             swal.fire({
                 icon: 'error',
                 title: 'Leave Time Failed Input',
@@ -294,13 +314,15 @@ $(document).on("change", "#modal_leave_time", function(e){
                 showConfirmButton: false,
                 timer: 1500
             })
-            window.location.reload();
+            setTimeout(function() {
+                window.location.reload();
+            }, 1500);
     }
     });
 })
 </script>
 
-<script type="text/javascript">
+{{-- <script type="text/javascript">
     $(document).ready(function() {
         $('#search').on('keyup', debounce(1000,function() {
             var searchValue = $(this).val().toLowerCase();
@@ -319,5 +341,55 @@ $(document).on("change", "#modal_leave_time", function(e){
             })
         }))
     });
+</script> --}}
+
+<script src="{{ asset('vendor/jquery/html5-qrcode.min.js') }}"></script>
+<script>
+    var date = document.getElementById('date').value;
+    let html5QRCodeScanner = new Html5QrcodeScanner(
+        "reader", {
+            fps: 30,
+            qrbox: 300,
+            supportedScanTypes: [
+                // Html5QrcodeScanType.SCAN_TYPE_FILE, 
+                Html5QrcodeScanType.SCAN_TYPE_CAMERA
+            ],
+        }
+    );
+
+    function onScanSuccess(decodedText, decodedResult) {
+        // redirect ke link hasil scan
+        // var decoder = "canteen?npk=" + decodedResult.decodedText + "&canteen_no=1";
+        var decoder = decodedResult.decodedText;
+        document.getElementById('modal_visit_time').value = decoder;
+        $('#modal_visit_time').trigger('change');
+        
+        // alert(decoder);
+        // window.location.href = decoder;
+        html5QRCodeScanner.clear();
+    }
+
+    let html5QRCodeScannerLeave = new Html5QrcodeScanner(
+        "readerLeave", {
+            fps: 30,
+            qrbox: 300,
+            supportedScanTypes: [
+                // Html5QrcodeScanType.SCAN_TYPE_FILE, 
+                Html5QrcodeScanType.SCAN_TYPE_CAMERA
+            ],
+        }
+    );
+
+    function onScanSuccessLeave(decodedText, decodedResult) {
+        // redirect ke link hasil scan
+        // var decoder = "canteen?npk=" + decodedResult.decodedText + "&canteen_no=1";
+        var decoder = decodedResult.decodedText;
+        document.getElementById('modal_leave_time').value = decoder;
+        $('#modal_leave_time').trigger('change');
+        
+        // alert(decoder);
+        // window.location.href = decoder;
+        html5QRCodeScanner.clear();
+    }
 </script>
 </html>

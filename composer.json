@@ -12,6 +12,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "realrashid/sweet-alert": "^7.3",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.19",
         "thiagoalessio/tesseract_ocr": "^2.13",
         "yajra/laravel-datatables": "^10.1"

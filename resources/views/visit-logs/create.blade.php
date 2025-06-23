@@ -86,7 +86,7 @@
                                     <br>
                                     <div>
                                         <label for="text">Visitor Card ID :</label>
-                                        <input class="form-control" type="text" id="visitor_card_id" name="visitor_card_id" value="{{$visitor_card_id->id}}" readonly>
+                                        <input class="form-control" type="text" id="visitor_card_id" name="visitor_card_id" value="{{$visitor_card_id->visitor_number}}" readonly>
                                     </div>
                                     <br>
                                     <div class="row">
