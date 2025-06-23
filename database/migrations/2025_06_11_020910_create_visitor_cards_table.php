@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('visitor_cards', function (Blueprint $table) {
             $table->id();
-            $table->string('rfid');
+            $table->string('rfid')->nullable();
             $table->string('visitor_code');
+            $table->string('visitor_number');
             $table->string('status_card')->default('available');
+            $table->string('qr_name');
+            $table->string('qr_path');
             $table->string('void')->default('false');
             $table->timestamps();
         });
