@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('visitor_cards', function (Blueprint $table) {
             $table->id();
             $table->string('rfid')->nullable();
-            $table->string('visitor_code');
-            $table->string('visitor_number');
+            $table->string('visitor_code')->nullable();
+            $table->string('visitor_number')->nullable();
             $table->string('status_card')->default('available');
-            $table->string('qr_name');
-            $table->string('qr_path');
+            $table->string('qr_name')->nullable();
+            $table->string('qr_path')->nullable();
             $table->string('void')->default('false');
             $table->timestamps();
         });
