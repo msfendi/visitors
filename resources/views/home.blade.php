@@ -74,7 +74,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Total Approved Document</div>
+                                            Total Active Visitor</div>
                                         {{-- <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ($totalapproved[0]->total) }}</div> --}}
                                     </div>
                                     <div class="col-auto">
@@ -90,7 +90,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                            Total Pending Document</div>
+                                            Total Daily Attendance Visitor</div>
                                         {{-- <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ($totalpending[0]->total) }}</div> --}}
                                     </div>
                                     <div class="col-auto">
@@ -106,7 +106,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Total Revision Document</div>
+                                            Total Weekly Attendance Visitor</div>
                                         {{-- <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ($totalrevision[0]->total) }}</div> --}}
                                     </div>
                                     <div class="col-auto">
@@ -122,7 +122,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
-                                            Total Uploaded Document</div>
+                                            Total Montly Attendance Visitor</div>
                                         {{-- <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ($totaldocument[0]->total) }}</div> --}}
                                     </div>
                                     <div class="col-auto">
@@ -133,7 +133,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card shadow mb-4">
+                {{-- <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Chutex E-Signature Flow</h6>
                     </div>
@@ -143,7 +143,7 @@
                                 src="{{asset('storage/images/ilustration.png')}}" alt="...">
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
         </div>
