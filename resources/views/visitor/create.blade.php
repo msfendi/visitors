@@ -249,7 +249,12 @@
                                                 <strong>{{ $message }}</strong>
                                             </div>
                                             @endif
-                                            <center><div id="reader" style="width: 500px;"></div></center>
+                                            <center>
+                                                <div id="reader" style="width: 500px;"></div>
+                                                <div class="form-group my-3" style="max-width: 500px;">
+                                                    <input class="form-control" type="text" id="barcode" name="barcode" autocomplete="off">
+                                                </div>
+                                            </center>
                                         </div>
                                     </div>
                                 </div>
@@ -640,14 +645,14 @@
                 if (data.data.analysis.parsed.alamat) {
                     $('#alamat').val(data.data.analysis.parsed.alamat);
                 }
-                if (data.data.analysis.parsed.kelurahan) {
-                    $('#kelurahan').val(data.data.analysis.parsed.kelurahan);
+                if (data.data.analysis.parsed.kel_desa) {
+                    $('#kelurahan').val(data.data.analysis.parsed.kel_desa);
                 }
                 if (data.data.analysis.parsed.kecamatan) {
                     $('#kecamatan').val(data.data.analysis.parsed.kecamatan);
                 }
-                if (data.data.analysis.parsed.kota) {
-                    $('#kota').val(data.data.analysis.parsed.kota);
+                if (data.data.analysis.parsed.tempat_tanggal_lahir) {
+                    $('#kota').val(data.data.analysis.parsed.tempat_tanggal_lahir);
                 }
                 
                 document.getElementById('processingStatus').className = 'alert alert-success mt-3';
@@ -708,42 +713,41 @@
 
 
 
-    // $(document).ready(function () {
-    //     document.getElementById("barcode").focus();
-    //     $('input[name="barcode"]').blur(function(){
-    //         $('input[name="barcode"]').focus();
-    //     });
+    $(document).ready(function () {
+        document.getElementById("barcode").focus();
+        $('input[name="barcode"]').blur(function(){
+            $('input[name="barcode"]').focus();
+        });
         
-    //     var typingTimer;
-    //     var doneTypingInterval = 500;
-    //     var $input = $('#barcode');
+        var typingTimer;
+        var doneTypingInterval = 500;
+        var $input = $('#barcode');
 
-    //     $input.on('keyup', function () {
-    //         clearTimeout(typingTimer);
-    //         typingTimer = setTimeout(doneTyping, doneTypingInterval);
-    //     });
+        $input.on('keyup', function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(doneTyping, doneTypingInterval);
+        });
 
-    //     $input.on('keydown', function () {
-    //         clearTimeout(typingTimer);
-    //     });
+        $input.on('keydown', function () {
+            clearTimeout(typingTimer);
+        });
 
-    //     function doneTyping () {
-    //         onSuccessScanner();
-    //     }
-    //     // document.getElementById("barcode").addEventListener("input", onScanSuccess);
-    // });
+        function doneTyping () {
+            onSuccessScanner();
+        }
+        // document.getElementById("barcode").addEventListener("input", onScanSuccess);
+    });
 
-    // function onSuccessScanner() {
-    //     var decoder = document.getElementById("barcode").value;
-    //     Swal.fire(decoder);
-    //     document.getElementById("barcode").value = '';
-    // }
-    // function onScanSuccess(decodedText, decodedResult) {
-    //     // redirect ke link hasil scan
-    //     var decoder = decodedResult.decodedText;
-    //     // alert(decoder);
-    //     Swal.fire(decoder);
-    // }
+    function onSuccessScanner() {
+        var decoder = document.getElementById("barcode").value;
+        Swal.fire(decoder);
+        document.getElementById("barcode").value = '';
+    }
+    function onScanSuccess(decodedText, decodedResult) {
+        // redirect ke link hasil scan
+        var decoder = decodedResult.decodedText;
+        document.getElementById("barcode").value = decoder;
+    }
 
     html5QRCodeScanner.render(onScanSuccess);
 </script>
