@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// KTP Processing API Route (no auth required for easier testing)
+Route::post('/ktp/process', [\App\Http\Controllers\VisitorController::class, 'processKTP']);

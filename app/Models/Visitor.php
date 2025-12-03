@@ -11,9 +11,13 @@ class Visitor extends Model
 
     protected $fillable = [
         'name',
+        'nik',
+        'alamat',
+        'kelurahan',
+        'kecamatan',
+        'kota',
         'phone',
         'instansi',
-        'identity_number',
         'number_plate',
         'void'
     ];

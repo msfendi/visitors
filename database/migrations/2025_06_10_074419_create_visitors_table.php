@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('visitors', function (Blueprint $table) {
             $table->id();
+            $table->string('nik')->nullable();
             $table->string('name');
-            $table->string('phone');
-            $table->string('instansi');
-            $table->string('identity_number');
-            $table->string('number_plate');
+            $table->string('alamat')->nullable();
+            $table->string('kelurahan')->nullable();
+            $table->string('kecamatan')->nullable();
+            $table->string('kota')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('instansi')->nullable();
+            $table->string('number_plate')->nullable();
             $table->string('void')->default('false');
             $table->timestamps();
         });

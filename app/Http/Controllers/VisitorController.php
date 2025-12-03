@@ -30,32 +30,91 @@ class VisitorController extends Controller
         return view('visitor.create', compact('users'));
     }
 
-    public function store(Request $request)
+    // public function store(Request $request)
+    // {
+    //     $visitor = Visitor::create([
+    //         'name' => $request->visitor_name,
+    //         'phone' => $request->phone,
+    //         'instansi' => $request->instansi,
+    //         'identity_number' => $request->identity_number,
+    //         'number_plate' => $request->number_plate,
+    //         'void' => 'false',
+    //     ]);
+
+    //     Alert::success('Created Successfully!', 'Visitor successfully created!');
+    //     return redirect()->intended('visitor/index');
+    // }
+
+
+    public function checkin(Request $request)
     {
         $visitor = Visitor::create([
-            'name' => $request->visitor_name,
+            'visitor_id' => $request->visitor_id,
+            'nik' => $request->nik,
+            'visitor_name' => $request->visitor_name,
+            'alamat' => $request->alamat,
+            'kelurahan' => $request->kelurahan,
+            'kecamatan' => $request->kecamatan,
+            'kota' => $request->kota,
             'phone' => $request->phone,
             'instansi' => $request->instansi,
-            'identity_number' => $request->identity_number,
             'number_plate' => $request->number_plate,
             'void' => 'false',
         ]);
 
-        Alert::success('Created Successfully!', 'Visitor successfully created!');
+        VisitLog::create([
+            'visitor_id' => $visitor->visitor_id,
+            'visit_date' => $request->visit_date,
+            'visit_time' => now(),
+            'purpose' => $request->purpose,
+            'appointer' => $request->appointer,
+            'dept' => $request->dept,
+            'security_id' => Auth::user()->id,
+            'visitor_card_id' => $request->visitor_card_id,
+            'status' => $request->status,
+            'void' => 'false',
+        ]);
+
+        VisitorCard::where('id', $request->visitor_card_id)->update([
+            'status' => 'in-use',
+        ]);
+
+        Alert::success('Check-in Successfully!', 'Visitor successfully checked-in!');
         return redirect()->intended('visitor/index');
+    }
 
-        // $request->validate([
-        //     'image' => 'required|mimes:png,jpg,jpeg'
-        // ]);
+    public function checkout(Request $request)
+    {
+        $exploding = explode('_', $request->visitor_code);
+        $visitor_code = $exploding[0];
+        $visitor_number = $exploding[1];
 
-        // $image = $request->image;
+        $visitorCard = VisitorCard::where('visitor_code', '=', $visitor_code)->get();
 
-        // $ocr = new TesseractOCR($image); //Pakai TesseractOCR
-        // $text = $ocr->lang('eng')->run();
+        if (count($visitorCard) > 0) {
+            $visitLog = VisitLog::where('visitor_card_id', '=', $visitorCard[0]->visitor_number)->first();
+            if ($visitLog) {
+                $visitLog->update([
+                    'leave_time' => now()
+                ]);
 
-        // // $ocrText = OCR::scan($image); //Pakai LaraOCR
+                $visitorCard[0]->update([
+                    'status_card' => 'available',
+                ]);
 
-        // dd($text);
+                $visitLog->update([
+                    'visitor_card_id' => '',
+                ]);
+                return response()->json(['success' => true, 'message' => 'Leave time updated']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Visitor code not found'], 404);
+            }
+        } else {
+            // Alert::error('Error!', 'Visitor Code Id' . $visitor_code . 'not exist');
+            // return redirect()->back();
+            return response()->json(['success' => false, 'message' => 'Visitor code not found'], 404);
+        }
+
     }
 
     public function revision($id)

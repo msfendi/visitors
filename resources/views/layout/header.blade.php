@@ -17,6 +17,8 @@
     <!-- Custom styles for this template-->
     <link href="{{asset('css/sb-admin-2.min.css')}}" rel="stylesheet">
     <link href="{{asset('css/select2.min.css')}}" rel="stylesheet">
+    <!-- Horizontal Flow Step -->
+    <link href="{{asset('css/bs-stepper.min.css')}}" rel="stylesheet">
     <!-- Custom styles for this page -->
     <link href="{{asset('vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/10.5.1/sweetalert2.min.css">

@@ -16,6 +16,6 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesSeeder::class);
         $this->call(ModelHasRolesSeeder::class);
         $this->call(VisitorCardSeeder::class);
-        $this->call(VisitorSeeder::class);
+        // $this->call(VisitorSeeder::class);
     }
 }

@@ -69,6 +69,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/visitor/update', [VisitorController::class, 'update'])->name('visitor.updateVisitor');
     Route::post('/visitor/void', [VisitorController::class, 'void'])->name('visitor.void');
     Route::post('/visitor/restore', [VisitorController::class, 'restore'])->name('visitor.restore');
+    Route::get('/visitor/upload', function () {
+    return view('visitor.upload');
+})->name('visitor.upload');
+
+    Route::post('/visitor/check-in', [VisitorController::class, 'checkin'])->name('visitor.check-in');
+    Route::post('/visitor/check-out', [VisitorController::class, 'checkout'])->name('visitor.check-out');
 
     // Visit Logs
     Route::get('/visit-logs/index', [VisitLogController::class, 'index'])->name('visit-logs.index');

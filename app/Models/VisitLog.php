@@ -19,5 +19,7 @@ class VisitLog extends Model
         'dept',
         'security_id',
         'visitor_card_id',
+        'status',
+        'void',
     ];
 }
