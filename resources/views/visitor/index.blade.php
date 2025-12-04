@@ -19,8 +19,10 @@
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">Visitor List</h1>
                     <div>
-                        <a href="{{ route('visitor.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                            class="fas fa-plus fa-sm text-white-50"></i> Create Visitor</a>
+                        <a href="{{ route('visitor.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm"><i
+                            class="fas fa-plus fa-sm text-white-50"></i> Visit Person</a>
+                        <a href="{{ route('visitor.leave') }}" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
+                            class="fas fa-arrow-left fa-sm text-white-50"></i> Leave Person</a>
                     </div>
                 </div>
                 

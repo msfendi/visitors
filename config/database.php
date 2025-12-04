@@ -78,6 +78,21 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        'cii' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_CII_HOST', 'localhost'),
+            'port' => env('DB_CII_PORT', '1433'),
+            'database' => env('DB_CII_DATABASE', 'forge'),
+            'username' => env('DB_CII_USERNAME', 'forge'),
+            'password' => env('DB_CII_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => 'yes',
+            'trust_server_certificate' => true
+        ],
+
         'sqlsrvvisitor' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),

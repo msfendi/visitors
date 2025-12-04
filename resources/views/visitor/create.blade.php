@@ -186,10 +186,10 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Appointer Name :</label>
-                                                <select class="form-control appointer_name_id" id="appointer_name_id" name="appointer_name_id" >
+                                                <select class="form-control appointer_id" id="appointer_id" name="appointer_id" >
                                                     <option></option>
-                                                    @foreach ($users as $user )
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @foreach ($employees as $employee )
+                                                        <option value="{{ $employee->NPK }}">{{ $employee->NAMA_KARYAWAN }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -203,8 +203,10 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Security Name :</label>
-                                                <select class="form-control security_name_id" id="security_name_id" name="security_name_id">
-                                                    <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                                <select class="form-control security_id" id="security_id" name="security_id">
+                                                    @foreach ($securities as $security )
+                                                        <option value="{{ $security->NPK }}">{{ $security->NAMA_KARYAWAN }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
@@ -280,10 +282,32 @@
 <script src="{{asset('vendor/jquery/interact.min.js')}}"></script>
 
 <script>
-      var stepper2Node = document.querySelector('#stepper2')
-    //   var stepper2 = new Stepper(document.querySelector('#stepper2'))
+    $('.security_id').select2({
+        allowClear: true,
+        placeholder: 'Choose Security Person',
+    });
 
-      
+    $('.appointer_id').select2({
+        allowClear: true,
+        placeholder: 'Choose Appointer',
+    });
+</script>
+
+ <script>
+    $('#appointer_id').change(function() {
+        var appointer_id = $(this).val();
+        $.ajax({
+            url: '/visitor/fetch-employee/' + appointer_id,
+            type: 'GET',
+            success: function(data) {
+                $('#dept').val(data.dept);
+            }
+        });
+    });
+ </script>
+
+<script>
+    var stepper2Node = document.querySelector('#stepper2')  
     var stepper2 = new Stepper(document.querySelector('#stepper2'), {
           linear: false,
           animation: true

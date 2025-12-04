@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use thiagoalessio\TesseractOCR\TesseractOCR;
+use Illuminate\Support\Facades\DB;
 
 class VisitorController extends Controller
 {
@@ -27,7 +28,14 @@ class VisitorController extends Controller
     public function create()
     {
         $users = User::all();
-        return view('visitor.create', compact('users'));
+        $employees = DB::connection('cii')->table('BIODATA')->select('BIODATA.*')->get();
+        $securities = DB::connection('cii')->table('BIODATA')->select('BIODATA.*')->where('ID_DEPT', '304')->get();
+        return view('visitor.create', compact('users', 'employees', 'securities'));
+    }
+
+    public function leave()
+    {
+        return view('visitor.leave');
     }
 
     // public function store(Request $request)
@@ -48,6 +56,14 @@ class VisitorController extends Controller
 
     public function checkin(Request $request)
     {
+        $exploding = explode('_', $request->visitor_code);
+        $visitor_code = $exploding[0];
+        $visitor_number = $exploding[1];
+
+        $visitorCard = VisitorCard::where('visitor_code', $visitor_code)->update([
+            'status_card' => 'in-use',
+        ]);
+
         $visitor = Visitor::create([
             'visitor_id' => $request->visitor_id,
             'nik' => $request->nik,
@@ -64,19 +80,14 @@ class VisitorController extends Controller
 
         VisitLog::create([
             'visitor_id' => $visitor->visitor_id,
-            'visit_date' => $request->visit_date,
+            'visit_date' => date('Y-m-d'),
             'visit_time' => now(),
             'purpose' => $request->purpose,
-            'appointer' => $request->appointer,
+            'appointer' => $request->appointer_id,
             'dept' => $request->dept,
-            'security_id' => Auth::user()->id,
-            'visitor_card_id' => $request->visitor_card_id,
-            'status' => $request->status,
+            'security_id' => $request->security_id,
+            'visitor_card_id' => $visitorCard->id,
             'void' => 'false',
-        ]);
-
-        VisitorCard::where('id', $request->visitor_card_id)->update([
-            'status' => 'in-use',
         ]);
 
         Alert::success('Check-in Successfully!', 'Visitor successfully checked-in!');
@@ -114,7 +125,16 @@ class VisitorController extends Controller
             // return redirect()->back();
             return response()->json(['success' => false, 'message' => 'Visitor code not found'], 404);
         }
+    }
 
+    public function fetchEmployee($npk)
+    {
+        try {
+            $employee = DB::connection('cii')->select('BIODATA.BAG')->where('NPK', $npk)->get();
+            return response()->json($employee);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => 'Employee not found'], 402);
+        }
     }
 
     public function revision($id)
@@ -123,20 +143,20 @@ class VisitorController extends Controller
         return view('visitor.revision', compact('visitor'));
     }
 
-    public function update(Request $request)
-    {
-        $visitor = Visitor::find($request->visitor_id);
-        $visitor->update([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'instansi' => $request->instansi,
-            'identity_number' => $request->identity_number,
-            'number_plate' => $request->number_plate,
-        ]);
+    // public function update(Request $request)
+    // {
+    //     $visitor = Visitor::find($request->visitor_id);
+    //     $visitor->update([
+    //         'name' => $request->name,
+    //         'phone' => $request->phone,
+    //         'instansi' => $request->instansi,
+    //         'identity_number' => $request->identity_number,
+    //         'number_plate' => $request->number_plate,
+    //     ]);
 
-        Alert::success('Updated Successfully!', 'Visitor successfully updated!');
-        return redirect()->intended('visitor/index');
-    }
+    //     Alert::success('Updated Successfully!', 'Visitor successfully updated!');
+    //     return redirect()->intended('visitor/index');
+    // }
 
     public function void(Request $request)
     {

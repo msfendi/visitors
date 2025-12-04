@@ -73,6 +73,8 @@ Route::group(['middleware' => 'auth'], function () {
     return view('visitor.upload');
 })->name('visitor.upload');
 
+    Route::get('/visitor/fetch-employee/{npk}', [VisitorController::class, 'fetchEmployee'])->name('visitor.fetch-employee');
+    Route::get('/visitor/leave', [VisitorController::class, 'leave'])->name('visitor.leave');
     Route::post('/visitor/check-in', [VisitorController::class, 'checkin'])->name('visitor.check-in');
     Route::post('/visitor/check-out', [VisitorController::class, 'checkout'])->name('visitor.check-out');
 
