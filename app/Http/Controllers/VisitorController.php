@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Alimranahmed\LaraOCR\Facades\OCR;
 use App\Models\User;
 use App\Models\Visitor;
+use App\Models\VisitorCard;
+use App\Models\VisitLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -15,11 +17,19 @@ class VisitorController extends Controller
 {
     public function index(Request $request)
     {
+        // if ($request->void) {
+        //     $visitors = Visitor::where('void', $request->void)->orderBy('created_at', 'desc')
+        //         ->get();
+        // } else {
+        //     $visitors = Visitor::where('void', 'false')->orderBy('created_at', 'desc')
+        //         ->get();
+        // }
+
         if ($request->void) {
-            $visitors = Visitor::where('void', $request->void)->orderBy('created_at', 'desc')
+            $visitors = Visitor::join('visit_logs', 'visitors.id', '=', 'visit_logs.visitor_id')->where('visit_logs.void', $request->void)->orderBy('visit_logs.created_at', 'desc')
                 ->get();
         } else {
-            $visitors = Visitor::where('void', 'false')->orderBy('created_at', 'desc')
+            $visitors = Visitor::join('visit_logs', 'visitors.id', '=', 'visit_logs.visitor_id')->where('visit_logs.void', 'false')->orderBy('visit_logs.created_at', 'desc')
                 ->get();
         }
         return view('visitor.index', compact('visitors'));
@@ -56,42 +66,57 @@ class VisitorController extends Controller
 
     public function checkin(Request $request)
     {
+        // dd($request->all());
         $exploding = explode('_', $request->visitor_code);
         $visitor_code = $exploding[0];
         $visitor_number = $exploding[1];
 
-        $visitorCard = VisitorCard::where('visitor_code', $visitor_code)->update([
-            'status_card' => 'in-use',
-        ]);
+        $visitorCard = VisitorCard::where('visitor_code', $visitor_code)->get();
 
-        $visitor = Visitor::create([
-            'visitor_id' => $request->visitor_id,
-            'nik' => $request->nik,
-            'visitor_name' => $request->visitor_name,
-            'alamat' => $request->alamat,
-            'kelurahan' => $request->kelurahan,
-            'kecamatan' => $request->kecamatan,
-            'kota' => $request->kota,
-            'phone' => $request->phone,
-            'instansi' => $request->instansi,
-            'number_plate' => $request->number_plate,
-            'void' => 'false',
-        ]);
+        if (count($visitorCard) == 0) {
+            Alert::error('Error!', 'Visitor Code Id' . $visitor_code . 'not exist');
+            return redirect()->back();
+        }
 
-        VisitLog::create([
-            'visitor_id' => $visitor->visitor_id,
-            'visit_date' => date('Y-m-d'),
-            'visit_time' => now(),
-            'purpose' => $request->purpose,
-            'appointer' => $request->appointer_id,
-            'dept' => $request->dept,
-            'security_id' => $request->security_id,
-            'visitor_card_id' => $visitorCard->id,
-            'void' => 'false',
-        ]);
+        if ($visitorCard[0]->status_card == 'available') {
+            if (count($visitorCard) > 0) {
+                $visitorCard[0]->update([
+                    'status_card' => 'in-use',
+                ]);
+            }
 
-        Alert::success('Check-in Successfully!', 'Visitor successfully checked-in!');
-        return redirect()->intended('visitor/index');
+            $visitor = Visitor::create([
+                'id' => $request->visitor_id,
+                'nik' => $request->nik,
+                'name' => $request->visitor_name,
+                'alamat' => $request->alamat,
+                'kelurahan' => $request->kelurahan,
+                'kecamatan' => $request->kecamatan,
+                'kota' => $request->kota,
+                'phone' => $request->phone,
+                'instansi' => $request->instansi,
+                'number_plate' => $request->number_plate,
+                'void' => 'false',
+            ]);
+
+            VisitLog::create([
+                'visitor_id' => $visitor->id,
+                'visit_date' => date('Y-m-d'),
+                'visit_time' => now(),
+                'purpose' => $request->purpose,
+                'appointer' => $request->appointer_id,
+                'dept' => $request->dept,
+                'security_id' => $request->security_id,
+                'visitor_card_id' => $visitorCard[0]->id,
+                'void' => 'false',
+            ]);
+
+            Alert::success('Check-in Successfully!', 'Visitor successfully checked-in!');
+            return redirect()->intended('visitor/index');
+        } else {
+            Alert::error('Error!', 'Visitor Code Id' . $visitor_code . 'still in use');
+            return redirect()->back();
+        }
     }
 
     public function checkout(Request $request)
@@ -130,10 +155,15 @@ class VisitorController extends Controller
     public function fetchEmployee($npk)
     {
         try {
-            $employee = DB::connection('cii')->select('BIODATA.BAG')->where('NPK', $npk)->get();
-            return response()->json($employee);
+            $employee = DB::connection('cii') ->table('BIODATA') ->select('BAG') ->where('NPK', $npk) ->first();
+            
+            if ($employee) {
+                return response()->json([ 'success' => true, 'BAG' => $employee->BAG ], 200);
+            } else {
+                return response()->json([ 'success' => false, 'message' => 'Employee not found' ], 404);
+            }
         } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'message' => 'Employee not found'], 402);
+            return response()->json([ 'success' => false, 'message' => 'Database error: ' . $th->getMessage() ], 500);
         }
     }
 
@@ -142,21 +172,6 @@ class VisitorController extends Controller
         $visitor = Visitor::find($id);
         return view('visitor.revision', compact('visitor'));
     }
-
-    // public function update(Request $request)
-    // {
-    //     $visitor = Visitor::find($request->visitor_id);
-    //     $visitor->update([
-    //         'name' => $request->name,
-    //         'phone' => $request->phone,
-    //         'instansi' => $request->instansi,
-    //         'identity_number' => $request->identity_number,
-    //         'number_plate' => $request->number_plate,
-    //     ]);
-
-    //     Alert::success('Updated Successfully!', 'Visitor successfully updated!');
-    //     return redirect()->intended('visitor/index');
-    // }
 
     public function void(Request $request)
     {

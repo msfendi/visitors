@@ -44,11 +44,14 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Date of Visit</th>
                                         <th>Visitor Name</th>
-                                        <th>Phone</th>
                                         <th>Instansi</th>
-                                        <th>Identity Number</th>
-                                        <th>Number Plate</th>
+                                        <th>Appointer</th>
+                                        <th>Department</th>
+                                        <th>Visit Time</th>
+                                        <th>Leave Time</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -56,11 +59,20 @@
                                     @foreach($visitors as $visitor)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $visitor->visit_date }}</td>
                                         <td>{{ $visitor->name }}</td>
-                                        <td>{{ $visitor->phone }}</td>
                                         <td>{{ $visitor->instansi }}</td>
-                                        <td>{{ $visitor->identity_number }}</td>
-                                        <td>{{ $visitor->number_plate }}</td>
+                                        <td>{{ $visitor->appointer }}</td>
+                                        <td>{{ $visitor->dept }}</td>
+                                        <td>{{ Carbon\Carbon::parse($visitor->visit_time)->format('H:i') }}</td>
+                                        <td>{{ Carbon\Carbon::parse($visitor->leave_time)->format('H:i') ?? '' }}</td>
+                                        <td>
+                                            @if ($visitor->leave_time == null)
+                                                <span class="badge badge-success">Active</span>
+                                            @else
+                                                <span class="badge badge-danger">Leave</span>
+                                            @endif
+                                        </td>
                                          <td style="width: 8%">
                                              <center>
                                                 @if (request()->get('void') == 'false' || request()->get('void') == '')
@@ -138,53 +150,6 @@
             </div>
         </div>
 
-        {{-- <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-md" role="document" >
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 id="comment-title" class="modal-title" id="exampleModalLabel">Comment Record</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <label>Revision Comment : </label>
-                        <textarea class="form-control" type="text" id="modal_comment_detail" name="comment" readonly></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-
-        {{-- <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-md" role="document" >
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 id="modal-title" class="modal-title" id="exampleModalLabel">Import Approval</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form action="" method="POST" enctype="multipart/form-data">
-                        @csrf
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label>PILIH FILE</label>
-                                    <input type="file" name="file" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                                <button type="submit" class="btn btn-success">Import</button>
-                            </div>
-                    </form>
-                </div>
-            </div>
-        </div> --}}
-
-
 @include('layout.footer')
 </body>
 <!-- Page level plugins -->
@@ -194,35 +159,13 @@
 <!-- Page level custom scripts -->
 <script src="{{asset('js/demo/datatables-demo.js')}}"></script>
 <script type="text/javascript">
-    $('.btn-delete-record').on('click', function () {
-            $('#btn-confirm').attr('href', $(this).data('delete-link'));
-            $("#modal-text-record").text('Apakah anda yakin ingin menghapus Approval ' + $(this).data('delete-name') + '?');
-    });
     $('.btn-void-record').on('click', function () {
             $("#modal-text-record-void").text('Apakah anda yakin ingin menghapus Visitor ' + $(this).data('void-name') + '?');
     });
     $('.btn-restore-record').on('click', function () {
             $("#modal-text-record-restore").text('Apakah anda yakin ingin mengembalikan Visitor ' + $(this).data('restore-name') + '?');
     });
-    // $('.btn-revision-record').on('click', function () {
-    //         $("#modal-text-record-revision").text('Apakah anda yakin ingin mengubah status Approval menjadi Revision ' + $(this).data('revision-name') + '?');
-    // });
-    
-    // $(function () {
-    //     $('body').on('click', '#show-revision', function() {
-    //     var jsonRevision = $(this).data('revision-url'); 
-    //     $.get(jsonRevision, function (data) {
-    //         if (data.length > 0) {
-    //             $('#modal_preparer_id').val(data[0].preparer_id);
-    //             $('#modal_name').val(data[0].name);
-    //             $('#modal_document_name').val(data[0].document_name);
-    //             $('#modal_token').val(data[0].token);
-    //             } else {
 
-    //             }
-    //         });
-    //     });
-    // });
     $(function () {
         $('body').on('click', '#show-void', function() {
         var jsonVoid = $(this).data('void-url'); 

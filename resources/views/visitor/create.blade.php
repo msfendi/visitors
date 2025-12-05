@@ -254,14 +254,14 @@
                                             <center>
                                                 <div id="reader" style="width: 500px;"></div>
                                                 <div class="form-group my-3" style="max-width: 500px;">
-                                                    <input class="form-control" type="text" id="barcode" name="barcode" autocomplete="off">
+                                                    <input class="form-control" type="text" id="barcode" name="visitor_code" autocomplete="off">
                                                 </div>
                                             </center>
                                         </div>
                                     </div>
                                 </div>
                                 <a class="btn btn-primary mx-2" onclick="stepper2.previous()">Previous</a>
-                                <a class="btn btn-primary" onclick="stepper2.submit()">Submit</a>
+                                <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </div>
                         </form>
@@ -280,6 +280,8 @@
 <script type="module" src="{{asset('vendor/module/pdf.min.mjs')}}"></script>
 <script type="module" src="{{asset('vendor/module/pdf.worker.min.mjs')}}"></script>
 <script src="{{asset('vendor/jquery/interact.min.js')}}"></script>
+<!-- OpenCV.js for Card Detection -->
+<script src="https://docs.opencv.org/4.8.0/opencv.js"></script>
 
 <script>
     $('.security_id').select2({
@@ -293,14 +295,23 @@
     });
 </script>
 
- <script>
-    $('#appointer_id').change(function() {
-        var appointer_id = $(this).val();
-        $.ajax({
-            url: '/visitor/fetch-employee/' + appointer_id,
-            type: 'GET',
-            success: function(data) {
-                $('#dept').val(data.dept);
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(document).on("change", "#appointer_id", function(e){
+            e.preventDefault();
+            var appointer_id = $(this).val();
+            if (appointer_id) {
+                $.ajax({
+                    url: '/visitor/fetch-employee/'+appointer_id,
+                    type: "GET",
+                    dataType: "json",
+                    success:function(data) {
+                        $('#dept').val(data.BAG);
+                    }
+                });
+            } else{
+                $('#dept').empty();
+                $('#dept').attr('disabled','disabled');
             }
         });
     });
@@ -309,23 +320,10 @@
 <script>
     var stepper2Node = document.querySelector('#stepper2')  
     var stepper2 = new Stepper(document.querySelector('#stepper2'), {
-          linear: false,
-          animation: true
-        })
-    stepper2Node.addEventListener('show.bs-stepper', function (event) {
-        console.warn('show.bs-stepper', event)
+        linear: false,
+        animation: true
     })
-    stepper2Node.addEventListener('shown.bs-stepper', function (event) {
-        console.warn('shown.bs-stepper', event)
-    })
-    var stepper3 = new Stepper(document.querySelector('#stepper3'), {
-    animation: true
-    })
-    var stepper4 = new Stepper(document.querySelector('#stepper4'))
 </script>
-
-<!-- OpenCV.js for Card Detection -->
-<script src="https://docs.opencv.org/4.8.0/opencv.js"></script>
 
 <script>
     // KTP Camera Scanner Implementation
@@ -345,7 +343,6 @@
     function waitForOpenCV() {
         if (typeof cv !== 'undefined' && cv.getBuildInformation) {
             opencvLoaded = true;
-            console.log('✅ OpenCV.js loaded successfully');
         } else {
             setTimeout(waitForOpenCV, 100);
         }
@@ -561,8 +558,6 @@
         // $('#kelurahan').val('');
         // $('#kecamatan').val('');
         // $('#kota').val('');
-        
-        console.log('✅ KTP Scanner state reset');
     }
     
     // Update scan status
@@ -656,8 +651,6 @@
         })
         .then(response => response.json())
         .then(data => {
-            console.log('API Response:', data);
-            
             // Auto-fill form fields
             if (data.code === 200) {
                 if (data.data.analysis.parsed.nik) {
@@ -734,45 +727,13 @@
             ],
         }
     );
-
-
-
     $(document).ready(function () {
-        document.getElementById("barcode").focus();
-        $('input[name="barcode"]').blur(function(){
-            $('input[name="barcode"]').focus();
-        });
-        
-        var typingTimer;
-        var doneTypingInterval = 500;
-        var $input = $('#barcode');
-
-        $input.on('keyup', function () {
-            clearTimeout(typingTimer);
-            typingTimer = setTimeout(doneTyping, doneTypingInterval);
-        });
-
-        $input.on('keydown', function () {
-            clearTimeout(typingTimer);
-        });
-
-        function doneTyping () {
-            onSuccessScanner();
-        }
-        // document.getElementById("barcode").addEventListener("input", onScanSuccess);
+        html5QRCodeScanner.render(onScanSuccess);
     });
 
-    function onSuccessScanner() {
-        var decoder = document.getElementById("barcode").value;
-        Swal.fire(decoder);
-        document.getElementById("barcode").value = '';
-    }
     function onScanSuccess(decodedText, decodedResult) {
-        // redirect ke link hasil scan
-        var decoder = decodedResult.decodedText;
-        document.getElementById("barcode").value = decoder;
+        document.getElementById("barcode").value = decodedText;
+        html5QRCodeScanner.clear();
     }
-
-    html5QRCodeScanner.render(onScanSuccess);
 </script>
 </html>
