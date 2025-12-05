@@ -734,6 +734,38 @@
     function onScanSuccess(decodedText, decodedResult) {
         document.getElementById("barcode").value = decodedText;
         html5QRCodeScanner.clear();
+
+        // $.ajax({
+        //     url: "{{ route('visitor.check-in') }}",
+        //     type: "POST",
+        //     data: {
+        //         _token: "{{ csrf_token() }}",
+        //         name: $('#name').val(),
+        //         nik: $('#nik').val(),
+        //         alamat: $('#alamat').val(),
+        //         kelurahan: $('#kelurahan').val(),
+        //         kecamatan: $('#kecamatan').val(),
+        //         kota: $('#kota').val(),
+        //         phone: $('#phone').val(),
+        //         instansi: $('#instansi').val(),
+        //         number_plate: $('#number_plate').val(),
+        //         visitor_id: $('#visitor_id').val(),
+        //         purpose: $('#purpose').val(),
+        //         appointer_id: $('#appointer_id').val(),
+        //         dept: $('#dept').val(),
+        //         security_id: $('#security_id').val(),
+        //         visitor_code: $('#barcode').val(),
+        //     },
+        //     dataType: "json",
+        //     success: function (data) {
+        //         if (data.status == "success") {
+        //             Swal.fire(data.message);
+        //             window.location.href = "{{ route('visitor.index') }}";
+        //         } else {
+        //             Swal.fire(data.message);
+        //         }
+        //     },
+        // });
     }
 </script>
 </html>

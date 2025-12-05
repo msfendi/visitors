@@ -91,68 +91,45 @@
     );
 
     $(document).ready(function () {
-        document.getElementById("barcode").focus();
-        $('input[name="barcode"]').blur(function(){
-            $('input[name="barcode"]').focus();
-        });
-        
-        var typingTimer;
-        var doneTypingInterval = 500;
-        var $input = $('#barcode');
-
-        $input.on('keyup', function () {
-            clearTimeout(typingTimer);
-            typingTimer = setTimeout(doneTyping, doneTypingInterval);
-        });
-
-        $input.on('keydown', function () {
-            clearTimeout(typingTimer);
-        });
-
-        function doneTyping () {
-            onSuccessScanner();
-        }
-        // document.getElementById("barcode").addEventListener("input", onScanSuccess);
+        html5QRCodeScanner.render(onScanSuccess);
     });
 
-    function onSuccessScanner() {
-        var decoder = document.getElementById("barcode").value;
-        Swal.fire(decoder);
-        document.getElementById("barcode").value = '';
-    }
     function onScanSuccess(decodedText, decodedResult) {
-        // redirect ke link hasil scan
-        var decoder = decodedResult.decodedText;
-        document.getElementById("barcode").value = decoder;
-    }
-
-    html5QRCodeScanner.render(onScanSuccess);
-</script>
-
-<script>
-    // request use ajax
-    $(document).ready(function () {
-        $('#barcode').on('change', function () {
-            var visitor_code = $(this).val();
-            $.ajax({
+        document.getElementById("barcode").value = decodedText;
+        var visitor_code = decodedText;
+        html5QRCodeScanner.clear();
+        $.ajax({
                 url: "{{ route('visitor.check-out') }}",
                 type: "POST",
                 data: {
                     _token: "{{ csrf_token() }}",
                     visitor_code: visitor_code,
                 },
+                dataType: "json",
                 success: function (data) {
                     if (data.status == "success") {
                         Swal.fire(data.message);
+                        window.location.href = "{{ route('visitor.index') }}";
                     } else {
-                        Swal.fire(data.message);
+                        Swal.fire('scan failed1');
+                        window.location.href = "{{ route('visitor.index') }}";
                     }
                 },
                 error: function (data) {
-                    Swal.fire(data.message);
+                    Swal.fire('scan failed2');
+                    window.location.href = "{{ route('visitor.index') }}";
                 },
             });
-        });
-    })
+    }
+</script>
+
+<script>
+    // request use ajax
+    // $(document).ready(function () {
+    //     $('#barcode').on('change', function () {
+    //         var visitor_code = $(this).val();
+            
+    //     });
+    // })
 </script>
 </html>

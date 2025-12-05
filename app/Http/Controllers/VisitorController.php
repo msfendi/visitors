@@ -76,6 +76,7 @@ class VisitorController extends Controller
         if (count($visitorCard) == 0) {
             Alert::error('Error!', 'Visitor Code Id' . $visitor_code . 'not exist');
             return redirect()->back();
+            // return response()->json(['success' => false, 'message' => 'Visitor Code Id' . $visitor_code . 'not exist']);
         }
 
         if ($visitorCard[0]->status_card == 'available') {
@@ -113,9 +114,11 @@ class VisitorController extends Controller
 
             Alert::success('Check-in Successfully!', 'Visitor successfully checked-in!');
             return redirect()->intended('visitor/index');
+            // return response()->json(['success' => true, 'message' => 'Visitor checked-in successfully']);
         } else {
             Alert::error('Error!', 'Visitor Code Id' . $visitor_code . 'still in use');
             return redirect()->back();
+            // return response()->json(['success' => false, 'message' => 'Visitor Code Id' . $visitor_code . 'still in use']);
         }
     }
 
@@ -128,7 +131,7 @@ class VisitorController extends Controller
         $visitorCard = VisitorCard::where('visitor_code', '=', $visitor_code)->get();
 
         if (count($visitorCard) > 0) {
-            $visitLog = VisitLog::where('visitor_card_id', '=', $visitorCard[0]->visitor_number)->first();
+            $visitLog = VisitLog::where('visitor_card_id', '=', $visitorCard[0]->visitor_number)->orderBy('created_at', 'desc')->first();
             if ($visitLog) {
                 $visitLog->update([
                     'leave_time' => now()
@@ -138,9 +141,9 @@ class VisitorController extends Controller
                     'status_card' => 'available',
                 ]);
 
-                $visitLog->update([
-                    'visitor_card_id' => '',
-                ]);
+                // $visitLog->update([
+                //     'visitor_card_id' => '',
+                // ]);
                 return response()->json(['success' => true, 'message' => 'Leave time updated']);
             } else {
                 return response()->json(['success' => false, 'message' => 'Visitor code not found'], 404);
