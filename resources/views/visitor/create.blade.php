@@ -637,7 +637,7 @@
         const base64Data = base64Image.split(',')[1];
         
         // Send to Google Apps Script for Gemini processing (no Tesseract OCR)
-        fetch('https://script.google.com/macros/s/AKfycbwBmYQQ_EMTJJ_5Ru11iL49vAQ9ydAVBMzPFrEwaLbkyzUGtaaI1u1uPXt5oN3PLglM/exec', {
+        fetch('https://script.google.com/macros/s/AKfycbya_wYLlmdR3MEIVDyOYgItrO-FYYDSMpXcai5DV7RwyqOi_9PG8TANFqDuvXSAUaTr/exec', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

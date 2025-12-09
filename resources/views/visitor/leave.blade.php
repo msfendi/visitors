@@ -107,11 +107,12 @@
                 },
                 dataType: "json",
                 success: function (data) {
-                    if (data.status == "success") {
+                    console.log(data);
+                    if (data.success == true) {
                         Swal.fire(data.message);
                         window.location.href = "{{ route('visitor.index') }}";
                     } else {
-                        Swal.fire('scan failed1');
+                        Swal.fire(data.message);
                         window.location.href = "{{ route('visitor.index') }}";
                     }
                 },

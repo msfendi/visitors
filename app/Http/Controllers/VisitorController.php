@@ -116,7 +116,7 @@ class VisitorController extends Controller
             return redirect()->intended('visitor/index');
             // return response()->json(['success' => true, 'message' => 'Visitor checked-in successfully']);
         } else {
-            Alert::error('Error!', 'Visitor Code Id' . $visitor_code . 'still in use');
+            Alert::error('Error!', 'Visitor Code Id ' . $visitor_code . ' still in use');
             return redirect()->back();
             // return response()->json(['success' => false, 'message' => 'Visitor Code Id' . $visitor_code . 'still in use']);
         }
